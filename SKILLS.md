@@ -1,6 +1,12 @@
 ---
 name: minions-blogs
-description: Blog definitions, settings, brand voice, and target audience profiles
+id: OC-0109
+version: 1.0.0
+description: "Blog definitions, settings, brand voice, and target audience profiles"
+category: ai
+subcategory: general
+tags: ["minion", "ai", "general"]
+comments:
 ---
 
 # minions-blogs — Agent Skills
