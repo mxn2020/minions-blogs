@@ -1,0 +1,6 @@
+@import "tailwindcss";
+
+:root {
+    --color-accent: #3B82F6;
+    --color-accent-hover: #2563EB;
+}
