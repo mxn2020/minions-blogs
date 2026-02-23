@@ -1,126 +1,166 @@
 ---
 name: minions-blogs
-description: Agent skills for working with Minions Blogs MinionTypes. Provides CRUD operations, CLI usage, and best practices for AI agents managing minions-blogs data.
+description: Blog definitions, settings, brand voice, and target audience profiles
 ---
 
-# Minions Blogs Agent Skills
+# minions-blogs — Agent Skills
 
-Skills for agents operating on the `minions-blogs` toolbox.
+## What is a Blog in the Minions Context?
 
-## Prerequisites
+Before defining types, it's worth being precise. A "blog" can mean:
 
-Install the SDK and CLI:
+```
+a publication with its own identity and audience   → Blog
+a style rule constraining how content is written   → BrandGuideline
+a target reader persona for content planning       → AudiencePersona
+```
+
+---
+
+## MinionTypes
+
+**Core**
+```ts
+// blog
+{
+  type: "blog",
+  fields: {
+    name: string,                    // "TechPulse", "DevDigest"
+    description: string,
+    domain: string,                  // "techpulse.io"
+    brandVoice: string,              // "authoritative but approachable"
+    targetAudience: string,
+    niche: string,
+    contentPillars: string[],        // ["AI", "DevTools", "Cloud"]
+    postingFrequency: "daily" | "weekly" | "biweekly" | "monthly",
+    status: "active" | "paused" | "archived",
+    createdAt: datetime
+  }
+}
+
+// brand-guideline
+{
+  type: "brand-guideline",
+  fields: {
+    blogId: string,
+    category: "tone" | "structure" | "formatting" | "vocabulary",
+    rule: string,                    // "Never use passive voice in headlines"
+    examples: string[],
+    priority: "must" | "should" | "nice-to-have",
+    isActive: boolean
+  }
+}
+
+// audience-persona
+{
+  type: "audience-persona",
+  fields: {
+    blogId: string,
+    name: string,                    // "Senior DevOps Engineer"
+    description: string,
+    painPoints: string[],
+    interests: string[],
+    contentPreferences: string[],
+    createdAt: datetime
+  }
+}
+```
+
+---
+
+## Relations
+
+```
+blog               --has_guideline-->    brand-guideline
+blog               --targets-->          audience-persona
+blog               --produces-->         article (minions-articles)
+blog               --researched_via-->   topic-cluster (minions-content-research)
+blog               --published_to-->     publish-target (minions-publishing)
+```
+
+---
+
+## How It Connects to Other Toolboxes
+
+```
+minions-content-research  → topic clusters are scoped to a blogId
+minions-articles          → articles belong to a blog and follow its brand guidelines
+minions-publishing        → publish targets are configured per blog
+minions-approvals         → blog creation or major changes may require approval
+minions-taxonomy          → content pillars can map to taxonomy categories
+```
+
+The blog is the anchor entity — it defines the identity, voice, and audience that all downstream content must align with.
+
+---
+
+## Agent SKILLS for `minions-blogs`
+
+```markdown
+# BlogAgent Skills
+
+## Context
+You manage blog definitions, brand guidelines, and audience personas.
+You are the keeper of the blog's identity. Everything written must
+conform to the brand guidelines you define.
+
+## Skill: Create Blog
+1. Define blog with name, domain, niche, brand voice
+2. Create initial brand-guideline Minions (tone, structure, formatting)
+3. Create at least one audience-persona
+4. Set content pillars based on niche research
+5. Set status to "active"
+
+## Skill: Update Brand Voice
+1. Review existing guidelines and recent article performance
+2. Add, modify, or deactivate brand-guideline Minions
+3. Notify WriterAgent of any guideline changes
+
+## Skill: Refine Audience
+1. Analyze engagement data from published articles
+2. Update audience-persona with new insights
+3. Create new personas if content reaches unexpected segments
+
+## Hard Rules
+- Every blog must have at least one brand-guideline
+- Never delete a blog — archive it
+- Brand guidelines are versioned through updates, not overwrites
+```
+
+
+---
+
+## CLI Reference
+
+Install globally:
 
 ```bash
-# TypeScript
-pnpm add @minions-blogs/sdk
-
-# Python
-pip install minions-blogs
-
-# CLI
 pnpm add -g @minions-blogs/cli
 ```
 
----
+Set `MINIONS_STORE` env var to control where data is stored (default: `.minions/`).
 
-## Using the CLI
-
-The `blogs` CLI provides basic project info and utilities:
+### Discover Types
 
 ```bash
-# Show project info (SDK name, CLI name, Python package)
-blogs info
+blogs types list
+blogs types show <type-slug>
 ```
 
-Use the CLI as the primary interface for scripted operations. For programmatic access within agent code, use the SDK directly.
+### CRUD
 
----
-
-## Using the SDK
-
-### TypeScript
-
-```ts
-import { customTypes } from '@minions-blogs/sdk/schemas';
-
-// List all available MinionTypes in this toolbox
-for (const type of customTypes) {
-  console.log(`${type.icon} ${type.name} (${type.slug})`);
-  console.log(`  ${type.description}`);
-  console.log(`  Fields: ${type.schema.map(f => f.name).join(', ')}`);
-}
-
-// Access a specific type
-const myType = customTypes.find(t => t.slug === 'YOUR_TYPE_SLUG');
+```bash
+blogs create <type> -t "Title" -s "status"
+blogs list <type>
+blogs show <id>
+blogs update <id> --data '{ "status": "active" }'
+blogs delete <id>
+blogs search "query"
 ```
 
-### Python
+### Stats & Validation
 
-```python
-from minions_blogs.schemas import custom_types
-
-# List all available MinionTypes
-for t in custom_types:
-    print(f"{t.icon} {t.name} ({t.slug})")
-    print(f"  {t.description}")
+```bash
+blogs stats
+blogs validate ./my-minion.json
 ```
-
----
-
-## Skill: Create Minion
-
-When creating a new Minion of any type in this toolbox:
-
-1. Look up the MinionType from `customTypes` by slug
-2. Validate all required fields are present according to the schema
-3. Set `string` fields to their values, `number` fields to numeric values
-4. Set `select` fields to one of their valid options
-5. Set `boolean` fields to `true` or `false`
-6. Always include a timestamp for any `createdAt` or similar fields (ISO 8601 format)
-
----
-
-## Skill: Read / Query Minions
-
-When reading or searching for Minions:
-
-1. Query by MinionType slug to filter by type
-2. Use field values for secondary filtering
-3. For references (fields ending in `Id`), resolve the linked Minion for full context
-4. Return results in a structured format the calling agent can parse
-
----
-
-## Skill: Update Minion
-
-When updating an existing Minion:
-
-1. Load the current Minion by ID
-2. Validate the update against the MinionType schema
-3. Only modify the fields that need changing — preserve existing values
-4. If the type has a `status` field, follow valid status transitions
-5. If the type has an `updatedAt` field, set it to the current timestamp
-6. Log significant field changes for audit if the context requires it
-
----
-
-## Skill: Delete / Archive Minion
-
-When removing a Minion:
-
-1. Prefer soft-delete: set `status` to `"cancelled"` or `"archived"` if available
-2. Never hard-delete Minions that other Minions reference via ID fields
-3. Check for dependent Minions before any destructive operation
-4. If hard-delete is required, ensure all references are cleaned up first
-
----
-
-## Hard Rules
-
-- Every Minion MUST conform to its MinionType schema
-- All `select` fields must use valid option values
-- All ID reference fields must point to existing Minions
-- Timestamps must be in ISO 8601 format
-- Never create orphaned Minions — always set reference fields when applicable
-- This agent only writes to `minions-blogs` — it reads from other toolboxes but never writes to them
