@@ -1,7 +1,7 @@
 {
     "name": "minions-blogs-workspace",
     "private": true,
-    "version": "0.1.0",
+    "version": "0.2.0",
     "description": "Blog definitions, settings, brand voice, and target audience profiles",
     "type": "module",
     "license": "MIT",

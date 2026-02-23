@@ -1,6 +1,6 @@
 {
   "name": "@minions-blogs/sdk",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Blog definitions, settings, brand voice, and target audience profiles",
   "type": "module",
   "main": "./dist/index.js",
