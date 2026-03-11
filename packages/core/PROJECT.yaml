@@ -1,0 +1,8 @@
+name: "@minions-blogs/sdk"
+project_scope: child
+child_type: sdk
+parent_project: minions-blogs-workspace
+description: "Blog definitions, settings, brand voice, and target audience profiles"
+priority: high
+deploy_url: null
+tags: null

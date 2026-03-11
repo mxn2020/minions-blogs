@@ -1,0 +1,15 @@
+name: minions-blogs-workspace
+project_scope: main
+project_type: monorepo
+description: "Blog definitions, settings, brand voice, and target audience profiles"
+tier: idea
+lane: minions
+priority: medium
+oss: true
+stack: [typescript]
+repo: "https://github.com/mxn2020/minions-blogs"
+deploy_url: null
+last_active: 2026-02-23
+tags: [minion, toolbox, ai-agent, automation, minions, blogs]
+notes: null
+id: 0249f82d-29f0-4dfb-a240-611b77da4c1c

@@ -1,0 +1,8 @@
+name: "@minions-blogs/cli"
+project_scope: child
+child_type: cli
+parent_project: minions-blogs-workspace
+description: "CLI for minions-blogs — Blog definitions, settings, brand voice, and target audience profiles"
+priority: high
+deploy_url: null
+tags: null
