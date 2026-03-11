@@ -6,3 +6,4 @@ description: "CLI for minions-blogs — Blog definitions, settings, brand voice,
 priority: high
 deploy_url: null
 tags: null
+category: minion-toolbox
